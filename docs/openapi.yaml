@@ -1,0 +1,127 @@
+openapi: 3.0.2
+info:
+  title: Idempotent Request Service
+  description: "Idempotent Request Service."
+  contact:
+    email: engineering_platform_team@checkr.com
+  version: 2.0.0
+externalDocs:
+  description: Repository
+  url: https://gitlab.checkrhq.net/platform/tools/idempotent-request
+servers:
+  - url: http://localhost:8080/api/v2
+tags:
+  - name: Captures
+    description: HTTP requests captures
+paths:
+  /captures:
+    put:
+      tags:
+        - Captures
+      summary: Allocate a new request capture
+      description: Allocate a new request capture
+      operationId: allocateCapture
+      requestBody:
+        $ref: '#/components/requestBodies/AllocateCaptureRequest'
+      responses:
+        200:
+          description: A previous request has been completed and its response was captured
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaptureRecord'
+        202:
+          description: A new request has been captured and will be processed. It should be updated with corresponding upstream response
+        400:
+          description: A malformed payload
+        409:
+          description: Another request with the same idempotency key is being processed
+        422:
+          description: Unprocessable entity. Idempotency key encoding is not compliant
+
+    post:
+      tags:
+        - Captures
+      summary: Capture a processed request and its response
+      description: Capture a processed request and its response
+      operationId: recordCapture
+      requestBody:
+        $ref: '#/components/requestBodies/RecordCaptureRequest'
+      responses:
+        200:
+          description: Successful operation
+        400:
+          description: Invalid input
+        403:
+          description: Capture has been completed or has not been allocated
+
+components:
+  requestBodies:
+    AllocateCaptureRequest:
+      description: Request object that needs to be added to the store
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CaptureAllocation"
+
+    RecordCaptureRequest:
+      description: Response obtained after processing a request
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CaptureRecord"
+
+  schemas:
+    RequestIdempotencyKey:
+      type: string
+      description: Base64 URL safe encoded (RFC 4648) Idempotency Key to distinguish requests
+      format: byte
+      example: "QkE2OTlCQjctNTg2QS00Qzk4LTk2OEYtRUY4NjVFRTBDODVG"
+
+    ResponseHeader:
+      type: object
+      properties:
+        key:
+          type: string
+          example: "Set-Cookie"
+        value:
+          type: string
+          example: "secret"
+
+    Capture:
+      required:
+        - response_status
+        - response_body
+        - response_headers
+      type: object
+      properties:
+        response_status:
+          type: integer
+          example: 200
+        response_body:
+          type: string
+          example: '{"resource_id": "123"}'
+        response_headers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResponseHeader"
+
+    CaptureAllocation:
+      required:
+        - idempotency_key
+      properties:
+        idempotency_key:
+          $ref: '#/components/schemas/RequestIdempotencyKey'
+
+    CaptureRecord:
+      required:
+        - idempotency_key
+        - response
+      type: object
+      properties:
+        idempotency_key:
+          $ref: '#/components/schemas/RequestIdempotencyKey'
+        response:
+          $ref: '#/components/schemas/Capture'
