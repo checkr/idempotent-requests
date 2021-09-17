@@ -1,0 +1,17 @@
+name: Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+
+  tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag idempotent-requests-server:$(date +%s)
