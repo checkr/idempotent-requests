@@ -7,7 +7,23 @@ import (
 
 const Captures = "/captures"
 
-func initRoutes(repo captures.Repository) []Route {
+func initApiV2Routes(repo captures.Repository) []Route {
+	return Routes{
+		{
+			"AllocateCapture",
+			http.MethodPut,
+			Captures,
+			NewAllocateCaptureHandler(repo),
+		},
+		{
+			"RecordCapture",
+			http.MethodPost,
+			Captures,
+			NewRecordCaptureHandler(repo),
+		},
+	}
+}
+func initApiMetaRoutes(repo captures.Repository) []Route {
 	return Routes{
 		{
 			"Ping",
@@ -22,16 +38,10 @@ func initRoutes(repo captures.Repository) []Route {
 			NewPanicHandler(),
 		},
 		{
-			"AllocateCapture",
-			http.MethodPut,
-			Captures,
-			NewAllocateCaptureHandler(repo),
-		},
-		{
-			"RecordCapture",
-			http.MethodPost,
-			Captures,
-			NewRecordCaptureHandler(repo),
+			"Readiness",
+			http.MethodGet,
+			"/ready",
+			NewReadinessHandler(repo),
 		},
 	}
 }

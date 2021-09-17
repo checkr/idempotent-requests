@@ -7,27 +7,28 @@ import (
 )
 
 const ApiV2 = "/api/v2"
+const ApiMeta = "/-"
 
 func registerHandlers(router *gin.Engine, capturesRepo captures.Repository) {
-	v2 := router.Group(ApiV2)
+	assignHandlers(router.Group(ApiMeta), initApiMetaRoutes(capturesRepo))
+	assignHandlers(router.Group(ApiV2), initApiV2Routes(capturesRepo))
+}
 
-	routes := initRoutes(capturesRepo)
-
+func assignHandlers(routerGroup *gin.RouterGroup, routes []Route) {
 	for _, route := range routes {
 		switch route.Method {
 		case http.MethodGet:
-			v2.GET(route.Pattern, route.Handler.Handle)
+			routerGroup.GET(route.Pattern, route.Handler.Handle)
 		case http.MethodPost:
-			v2.POST(route.Pattern, route.Handler.Handle)
+			routerGroup.POST(route.Pattern, route.Handler.Handle)
 		case http.MethodPut:
-			v2.PUT(route.Pattern, route.Handler.Handle)
+			routerGroup.PUT(route.Pattern, route.Handler.Handle)
 		case http.MethodPatch:
-			v2.PATCH(route.Pattern, route.Handler.Handle)
+			routerGroup.PATCH(route.Pattern, route.Handler.Handle)
 		case http.MethodDelete:
-			v2.DELETE(route.Pattern, route.Handler.Handle)
+			routerGroup.DELETE(route.Pattern, route.Handler.Handle)
 		}
 	}
-
 }
 
 // Route is the information for every URI.

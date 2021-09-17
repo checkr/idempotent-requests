@@ -4,6 +4,7 @@ import (
 	"checkr.com/idempotent-requests/pkg/captures"
 	"checkr.com/idempotent-requests/pkg/mongodb"
 	"context"
+	"github.com/avast/retry-go"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/writeconcern"
@@ -17,8 +18,9 @@ const (
 )
 
 type RepositoryImpl struct {
-	Client     *mongodb.Client
-	Collection *mongo.Collection
+	client     *mongodb.Client
+	collection *mongo.Collection
+	ready      bool
 }
 
 func NewRepository(client *mongodb.Client) *RepositoryImpl {
@@ -30,21 +32,37 @@ func NewRepository(client *mongodb.Client) *RepositoryImpl {
 	createIndex(context.Background(), collection)
 
 	return &RepositoryImpl{
-		Client:     client,
-		Collection: collection,
+		client:     client,
+		collection: collection,
+		ready:      true,
 	}
 }
 
 func createIndex(ctx context.Context, collection *mongo.Collection) {
+	maxRetries := 20
+	err := retry.Do(
+		func() error {
+			indexModel := mongo.IndexModel{
+				Keys: captures.AllocationIndex,
+				Options: options.Index().
+					SetUnique(true).
+					SetExpireAfterSeconds(int32(24 * time.Hour.Seconds())),
+			}
 
-	indexModel := mongo.IndexModel{
-		Keys: captures.AllocationIndex,
-		Options: options.Index().
-			SetUnique(true).
-			SetExpireAfterSeconds(int32(24 * time.Hour.Seconds())),
-	}
+			if _, err := collection.Indexes().CreateOne(ctx, indexModel); err == nil {
+				return nil
+			} else {
+				return err
+			}
+		},
+		retry.Attempts(uint(maxRetries)),
+		retry.MaxDelay(5*time.Second),
+		retry.OnRetry(func(n uint, err error) {
+			zap.S().Infof("faield to create indexes in mongo. re-try %d/%d", n+1, maxRetries)
+		}),
+	)
 
-	if _, err := collection.Indexes().CreateOne(ctx, indexModel); err != nil {
+	if err != nil {
 		zap.S().Panic(err)
 	}
 }

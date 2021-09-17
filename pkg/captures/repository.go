@@ -14,6 +14,9 @@ type Repository interface {
 	// Record completes the allocation by persisting Capture.
 	// If Allocation does not exist or has been completed previously, it returns ErrConflictOrMissing.
 	Record(ctx context.Context, allocation *Allocation) error
+
+	// Ready signals whether the repo is ready to handle invocations
+	Ready(ctx context.Context) bool
 }
 
 var ErrAllocationFailed = errors.New("allocation failed")

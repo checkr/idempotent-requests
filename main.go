@@ -17,7 +17,7 @@ func main() {
 	zap.ReplaceGlobals(logger)
 	defer logger.Sync()
 
-	mongo := mongodb.NewClient("mongodb://root:password123@localhost:27017")
+	mongo := mongodb.NewClient()
 	capturesRepo := captures_mongo.NewRepository(mongo)
 
 	httpServer := http.NewServer(capturesRepo)

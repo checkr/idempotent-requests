@@ -26,7 +26,7 @@ func (repo *RepositoryImpl) Allocate(ctx context.Context, idempotencyKey string)
 		SetUpsert(true).
 		SetReturnDocument(options.Before)
 
-	result := repo.Collection.FindOneAndUpdate(ctx, filter, update, opts)
+	result := repo.collection.FindOneAndUpdate(ctx, filter, update, opts)
 
 	if result.Err() != nil {
 		// It was the first upsert with a given idempotency key, it means that capture was only allocated.

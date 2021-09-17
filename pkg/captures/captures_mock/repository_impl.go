@@ -17,7 +17,7 @@ func NewRepositoryImpl() *RepositoryImpl {
 	}
 }
 
-func (r RepositoryImpl) Allocate(ctx context.Context, idempotencyKey string) (allocation *captures.Allocation, err error) {
+func (r *RepositoryImpl) Allocate(ctx context.Context, idempotencyKey string) (allocation *captures.Allocation, err error) {
 
 	allocation, ok := r.Storage[idempotencyKey]
 
@@ -40,7 +40,7 @@ func (r RepositoryImpl) Allocate(ctx context.Context, idempotencyKey string) (al
 	return allocation, nil
 }
 
-func (r RepositoryImpl) Record(ctx context.Context, allocation *captures.Allocation) error {
+func (r *RepositoryImpl) Record(ctx context.Context, allocation *captures.Allocation) error {
 
 	allocation, ok := r.Storage[allocation.IdempotencyKey]
 
@@ -53,4 +53,8 @@ func (r RepositoryImpl) Record(ctx context.Context, allocation *captures.Allocat
 
 	return captures.ErrConflictOrMissing
 
+}
+
+func (r *RepositoryImpl) Ready(ctx context.Context) bool {
+	return true
 }
