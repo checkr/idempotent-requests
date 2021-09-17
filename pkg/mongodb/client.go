@@ -12,8 +12,9 @@ type Client struct {
 	Mongo *mongo.Client
 }
 
-func NewClient(uri string) *Client {
-	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+func NewClient() *Client {
+	cfg := GetConfig()
+	client, err := mongo.NewClient(options.Client().ApplyURI(cfg.URI))
 	if err != nil {
 		zap.S().Panic(err)
 	}

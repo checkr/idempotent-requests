@@ -1,4 +1,4 @@
-.PHONY: build vendor fmt tests
+.PHONY: build vendor fmt test
 
 build:
 	@mkdir -p ./bin

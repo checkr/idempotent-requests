@@ -23,7 +23,7 @@ func (repo *RepositoryImpl) Record(ctx context.Context, allocation *captures.All
 	opts := options.FindOneAndUpdate().
 		SetReturnDocument(options.Before)
 
-	result := repo.Collection.FindOneAndUpdate(ctx, filter, update, opts)
+	result := repo.collection.FindOneAndUpdate(ctx, filter, update, opts)
 
 	if result.Err() != nil {
 		if result.Err() == mongo.ErrNoDocuments {
