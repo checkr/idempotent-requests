@@ -3,15 +3,17 @@ name: Release
 on:
   release:
     types:
-      - created
+      - published
 
 jobs:
 
   tests:
-    name: Unit Tests
+    name: Release artifacts
     runs-on: ubuntu-latest
     steps:
       - name: Check out
         uses: actions/checkout@v2
+      - name: Set environment variables
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag idempotent-requests-server:$(date +%s)
+        run: docker build . --file Dockerfile --tag idempotent-requests-server:$RELEASE_VERSION
