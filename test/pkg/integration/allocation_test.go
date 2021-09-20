@@ -36,19 +36,22 @@ func TestCaptures_Allocate(t *testing.T) {
 
 	resp, err := httpClient.Do(allocationReq)
 
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusAccepted, resp.StatusCode)
+	if assert.NoError(t, err) {
+		assert.Equal(t, http.StatusAccepted, resp.StatusCode)
+	}
 
 	captureRecordReq := utils.NewRecordCaptureRequest(CapturesV2URL, utils.CaptureRecordPayload(idempotencyKey))
 
 	resp, err = httpClient.Do(captureRecordReq)
 
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	if assert.NoError(t, err) {
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	}
 
 	resp, err = httpClient.Do(allocationReq)
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	if assert.NoError(t, err) {
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	}
 
 	defer resp.Body.Close()
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
@@ -57,8 +60,9 @@ func TestCaptures_Allocate(t *testing.T) {
 	var capture views.CaptureRecord
 	err = json.Unmarshal(bodyBytes, &capture)
 
-	assert.NoError(t, err)
-	assert.True(t, reflect.DeepEqual(capture.Response, utils.CaptureRecordPayload(idempotencyKey).(views.CaptureRecord).Response))
+	if assert.NoError(t, err) {
+		assert.True(t, reflect.DeepEqual(capture.Response, utils.CaptureRecordPayload(idempotencyKey).(views.CaptureRecord).Response))
+	}
 
 }
 
@@ -80,12 +84,14 @@ func TestCaptures_Allocate_Duplicate(t *testing.T) {
 
 	resp, err := httpClient.Do(allocationReq)
 
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusAccepted, resp.StatusCode)
+	if assert.NoError(t, err) {
+		assert.Equal(t, http.StatusAccepted, resp.StatusCode)
+	}
 
 	resp, err = httpClient.Do(allocationReq)
 
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusConflict, resp.StatusCode)
+	if assert.NoError(t, err) {
+		assert.Equal(t, http.StatusConflict, resp.StatusCode)
+	}
 
 }

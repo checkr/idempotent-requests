@@ -28,6 +28,8 @@ func TestCaptures_Record_Without_Allocation(t *testing.T) {
 
 	resp, err := httpClient.Do(captureRecordReq)
 
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+	if assert.NoError(t, err) {
+		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+	}
+
 }
