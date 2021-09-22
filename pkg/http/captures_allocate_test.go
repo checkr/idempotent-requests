@@ -24,8 +24,10 @@ func TestCaptures_Allocate(t *testing.T) {
 		expResCode int
 		expResBody string
 	}{
-		{name: "Captures_Allocate", req: NewAllocationRequest(map[string]string{"idempotency_key": base64.URLEncoding.EncodeToString([]byte("qwe"))}), expResCode: http.StatusAccepted, expResBody: ""},
-		{name: "Captures_Allocate_Malformed_Idempotency_Key", req: NewAllocationRequest(map[string]string{"idempotency_key": "qwe"}), expResCode: http.StatusUnprocessableEntity, expResBody: ""},
+		{name: "Captures_Allocate", req: NewAllocationRequest(map[string]string{"idempotency_key": base64.RawURLEncoding.EncodeToString([]byte("qwe"))}), expResCode: http.StatusAccepted, expResBody: ""},
+		{name: "Captures_Allocate_UUID_With_Extra_Char", req: NewAllocationRequest(map[string]string{"idempotency_key": base64.RawURLEncoding.EncodeToString([]byte("F3028015-BB17-479B-B2D6-3A096B7980592"))}), expResCode: http.StatusAccepted, expResBody: ""},
+		{name: "Captures_Allocate_PreEncoded", req: NewAllocationRequest(map[string]string{"idempotency_key": "RjMwMjgwMTUtQkIxNy00NzlCLUIyRDYtM0EwOTZCNzk4MDU5MQ"}), expResCode: http.StatusAccepted, expResBody: ""},
+		{name: "Captures_Allocate_Malformed_Idempotency_Key", req: NewAllocationRequest(map[string]string{"idempotency_key": "==qwe--"}), expResCode: http.StatusUnprocessableEntity, expResBody: ""},
 	}
 
 	for _, tt := range tests {

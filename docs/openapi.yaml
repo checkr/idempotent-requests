@@ -76,7 +76,7 @@ components:
   schemas:
     RequestIdempotencyKey:
       type: string
-      description: Base64 URL safe encoded (RFC 4648) Idempotency Key to distinguish requests
+      description: Base64 URL safe encoded without padding (RFC 4648) Idempotency Key to distinguish requests
       format: byte
       example: "QkE2OTlCQjctNTg2QS00Qzk4LTk2OEYtRUY4NjVFRTBDODVG"
 

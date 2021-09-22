@@ -30,7 +30,7 @@ func TestCaptures_Allocate(t *testing.T) {
 		Timeout: 10 * time.Second,
 	}
 
-	idempotencyKey := base64.URLEncoding.EncodeToString([]byte(uuid.New().String()))
+	idempotencyKey := base64.RawURLEncoding.EncodeToString([]byte(uuid.New().String()))
 
 	allocationReq := utils.NewAllocateCaptureRequest(CapturesV2URL, utils.CaptureAllocatePayload(idempotencyKey))
 
@@ -78,7 +78,7 @@ func TestCaptures_Allocate_Duplicate(t *testing.T) {
 		Timeout: 10 * time.Second,
 	}
 
-	idempotencyKey := base64.URLEncoding.EncodeToString([]byte(uuid.New().String()))
+	idempotencyKey := base64.RawURLEncoding.EncodeToString([]byte(uuid.New().String()))
 
 	allocationReq := utils.NewAllocateCaptureRequest(CapturesV2URL, utils.CaptureAllocatePayload(idempotencyKey))
 
