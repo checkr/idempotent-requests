@@ -1,4 +1,9 @@
-version: '3'
+version: '3.8'
+
+networks:
+  idempotent-requests:
+    name: idempotent-requests
+
 
 volumes:
   shard0_data:
@@ -19,6 +24,8 @@ services:
       MONGODB_ROOT_PASSWORD: "password123"
     ports:
       - "27017:27017"
+    networks:
+      idempotent-requests:
 
   mongodb-shard0:
     image: 'docker.io/bitnami/mongodb-sharded:5.0-debian-10'
@@ -32,6 +39,8 @@ services:
       MONGODB_REPLICA_SET_NAME: "shard0"
     volumes:
       - 'shard0_data:/bitnami'
+    networks:
+      idempotent-requests:
 
   mongodb-cfg:
     image: 'docker.io/bitnami/mongodb-sharded:5.0-debian-10'
@@ -44,3 +53,5 @@ services:
       MONGODB_REPLICA_SET_NAME: "cfgreplicaset"
     volumes:
       - 'cfg_data:/bitnami'
+    networks:
+      idempotent-requests:

@@ -26,7 +26,8 @@ func (h AllocateCaptureHandler) Handle(c *gin.Context) {
 		return
 	}
 
-	if !validIdempotencyKey(c, attemptedAllocation.IdempotencyKey) {
+	if !validIdempotencyKey(attemptedAllocation.IdempotencyKey) {
+		c.JSON(http.StatusUnprocessableEntity, views.MalformedIdempotencyKey)
 		return
 	}
 

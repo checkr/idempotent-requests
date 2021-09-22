@@ -28,7 +28,8 @@ func (h RecordCaptureHandler) Handle(c *gin.Context) {
 		return
 	}
 
-	if !validIdempotencyKey(c, capture.IdempotencyKey) {
+	if !validIdempotencyKey(capture.IdempotencyKey) {
+		c.JSON(http.StatusUnprocessableEntity, views.MalformedIdempotencyKey)
 		return
 	}
 
