@@ -6,6 +6,6 @@ services:
       context: .
       dockerfile: ./test/Dockerfile
     environment:
-      IDEMPOTENT_REQUESTS_HOST: "http://idempotent-request-server:8080"
+      IDEMPOTENT_REQUESTS_HOST: "http://idempotent-requests-server:8080"
     networks:
       idempotent-requests:

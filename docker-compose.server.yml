@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  idempotent-request-server:
+  idempotent-requests-server:
     build:
       context: .
       dockerfile: Dockerfile

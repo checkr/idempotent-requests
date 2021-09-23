@@ -17,7 +17,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: checkr/idempotent-request-server
+          images: checkr/idempotent-requests-server
       - name: Build the Docker image
         uses: docker/build-push-action@v2
         with:
