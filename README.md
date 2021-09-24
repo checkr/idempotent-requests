@@ -1,10 +1,12 @@
+![CI workflow](https://github.com/checkr/idempotent-requests/actions/workflows/ci.yml/badge.svg)
+![Release workflow](https://github.com/checkr/idempotent-requests/actions/workflows/release.yml/badge.svg)
+
 # Idempotent Requests
 Idempotent Requests Server provides API to allocate and record a captured request.
 
-## Project status
+## Idempotent Requests Client
 
- ![CI workflow](https://github.com/checkr/idempotent-requests/actions/workflows/ci.yml/badge.svg)
- ![Release workflow](https://github.com/checkr/idempotent-requests/actions/workflows/release.yml/badge.svg)
+We have implemented a client in a form of a [Kong Gateway](https://konghq.com/kong/) Plugin - [`idempotent-requests`](https://github.com/checkr/kong-plugin-idempotent-requests). 
 
 ## Configuration
 
@@ -13,8 +15,15 @@ Idempotent Requests Server provides API to allocate and record a captured reques
 | `MONGODB_URI` | yes | `mongodb://root:password123@localhost:27017` | URI to connect to MongoDB |
 
 
-## Example request sequence
+## Example topology
 
+This example topology relies on Kong Gateway to intercept client requests.
+A Kong Plugin acts as a client to Idempotent Requests Server.
+
+### Data flow 
+![data_flow](./docs/example_data_flow.png)
+
+### Sequence
 ![sequence](./docs/sequence.png)
 
 ## Running Integration Tests Locally
