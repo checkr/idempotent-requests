@@ -3,8 +3,10 @@ package main
 import (
 	"checkr.com/idempotent-requests/pkg/captures/captures_mongo"
 	"checkr.com/idempotent-requests/pkg/http"
-	mongodb "checkr.com/idempotent-requests/pkg/mongodb"
+	"checkr.com/idempotent-requests/pkg/mongodb"
+	"checkr.com/idempotent-requests/pkg/tracing"
 	"context"
+	"github.com/opentracing/opentracing-go"
 	"go.uber.org/zap"
 	"os"
 	"os/signal"
@@ -16,6 +18,12 @@ func main() {
 	logger, _ := zap.NewProduction()
 	zap.ReplaceGlobals(logger)
 	defer logger.Sync()
+
+	if tracing.GetConfig().TracingEnabled {
+		tracers := tracing.NewTracer()
+		opentracing.SetGlobalTracer(tracers.OpentracingTracer())
+		defer tracers.Stop()
+	}
 
 	mongo := mongodb.NewClient()
 	capturesRepo := captures_mongo.NewRepository(mongo)

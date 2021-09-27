@@ -26,6 +26,8 @@ Plugin - [`idempotent-requests`](https://github.com/checkr/kong-plugin-idempoten
 | Config | Required | Default | Explanation |
 | --- | --- | --- | --- |
 | `MONGODB_URI` | yes | `mongodb://root:password123@localhost:27017` | URI to connect to MongoDB |
+| `OPENTRACING_ENABLED` | no | `true` | Enable `opentracing` |
+| `OPENTRACING_TRACER_IMPLEMENTATION` | no | `datadog` | Use Datadog tracer implementation |
 
 ## Example topology
 
