@@ -2,6 +2,7 @@ package http
 
 import (
 	"checkr.com/idempotent-requests/pkg/captures/captures_mock"
+	"checkr.com/idempotent-requests/pkg/tracing"
 	"checkr.com/idempotent-requests/pkg/views"
 	"encoding/base64"
 	"github.com/gin-gonic/gin"
@@ -21,7 +22,9 @@ const (
 
 func TestCaptures_Record(t *testing.T) {
 	capturesRepo := captures_mock.NewRepositoryImpl()
-	router := NewRouter(capturesRepo)
+	tracer := tracing.MockTracer{}
+
+	router := NewRouter(tracer, capturesRepo)
 
 	tests := []struct {
 		name               string

@@ -1,6 +1,7 @@
 package mongodb
 
 import (
+	"checkr.com/idempotent-requests/pkg/tracing"
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -12,9 +13,13 @@ type Client struct {
 	Mongo *mongo.Client
 }
 
-func NewClient() *Client {
+func NewClient(tracer tracing.Tracer) *Client {
 	cfg := GetConfig()
-	client, err := mongo.NewClient(options.Client().ApplyURI(cfg.URI))
+	opts := options.Client().ApplyURI(cfg.URI)
+
+	opts = tracer.MongoDB(opts)
+
+	client, err := mongo.NewClient(opts)
 	if err != nil {
 		zap.S().Panic(err)
 	}

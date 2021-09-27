@@ -35,7 +35,7 @@ func (h RecordCaptureHandler) Handle(c *gin.Context) {
 
 	allocation := adapters.CaptureRecordToAllocation(&capture)
 
-	if err := h.capturesRepo.Record(c, allocation); err != nil {
+	if err := h.capturesRepo.Record(c.Request.Context(), allocation); err != nil {
 
 		if err == captures.ErrConflictOrMissing {
 			c.JSON(http.StatusForbidden, views.CaptureIsCompleted)

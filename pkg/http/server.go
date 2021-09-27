@@ -2,6 +2,7 @@ package http
 
 import (
 	"checkr.com/idempotent-requests/pkg/captures"
+	"checkr.com/idempotent-requests/pkg/tracing"
 	"context"
 	"github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
@@ -14,8 +15,8 @@ type Server struct {
 	Server *http.Server
 }
 
-func NewServer(records captures.Repository) *Server {
-	router := NewRouter(records)
+func NewServer(tracer tracing.Tracer, records captures.Repository) *Server {
+	router := NewRouter(tracer, records)
 
 	srv := &http.Server{
 		Addr:         ":8080",
@@ -26,10 +27,11 @@ func NewServer(records captures.Repository) *Server {
 	return &Server{Server: srv}
 }
 
-func NewRouter(captures captures.Repository) *gin.Engine {
+func NewRouter(tracer tracing.Tracer, captures captures.Repository) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 
+	tracer.Gin(router)
 	router.Use(ginzap.Ginzap(zap.S().Desugar(), time.RFC822, false))
 	router.Use(ginzap.RecoveryWithZap(zap.S().Desugar(), false))
 

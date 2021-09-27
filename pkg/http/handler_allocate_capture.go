@@ -20,6 +20,7 @@ func NewAllocateCaptureHandler(capturesRepo captures.Repository) Handler {
 }
 
 func (h AllocateCaptureHandler) Handle(c *gin.Context) {
+
 	var attemptedAllocation views.CaptureAllocation
 	if err := c.BindJSON(&attemptedAllocation); err != nil {
 		c.JSON(http.StatusBadRequest, views.MalformedPayload)
@@ -31,7 +32,7 @@ func (h AllocateCaptureHandler) Handle(c *gin.Context) {
 		return
 	}
 
-	allocation, err := h.capturesRepo.Allocate(c, attemptedAllocation.IdempotencyKey)
+	allocation, err := h.capturesRepo.Allocate(c.Request.Context(), attemptedAllocation.IdempotencyKey)
 
 	if err != nil {
 		zap.S().Errorw("failed to allocate a capture", "err", err.Error())

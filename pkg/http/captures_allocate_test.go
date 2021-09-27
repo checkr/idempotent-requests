@@ -3,6 +3,7 @@ package http
 import (
 	"bytes"
 	"checkr.com/idempotent-requests/pkg/captures/captures_mock"
+	"checkr.com/idempotent-requests/pkg/tracing"
 	"encoding/base64"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
@@ -16,7 +17,9 @@ const CapturesV2URL = "/api/v2/captures"
 
 func TestCaptures_Allocate(t *testing.T) {
 	capturesRepo := captures_mock.NewRepositoryImpl()
-	router := NewRouter(capturesRepo)
+	tracer := tracing.MockTracer{}
+
+	router := NewRouter(tracer, capturesRepo)
 
 	tests := []struct {
 		name       string
