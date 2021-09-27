@@ -18,7 +18,7 @@ func NewReadinessHandler(capturesRepo captures.Repository) Handler {
 
 func (h ReadinessHandler) Handle(c *gin.Context) {
 
-	ready := h.capturesRepo.Ready(c)
+	ready := h.capturesRepo.Ready(c.Request.Context())
 
 	if ready {
 		c.Status(http.StatusOK)

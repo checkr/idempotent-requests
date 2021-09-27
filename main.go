@@ -19,16 +19,17 @@ func main() {
 	zap.ReplaceGlobals(logger)
 	defer logger.Sync()
 
+	var tracer tracing.Tracer
 	if tracing.GetConfig().TracingEnabled {
-		tracers := tracing.NewTracer()
-		opentracing.SetGlobalTracer(tracers.OpentracingTracer())
-		defer tracers.Stop()
+		tracer = tracing.NewTracer()
+		opentracing.SetGlobalTracer(tracer.OpentracingTracer())
+		defer tracer.Stop()
 	}
 
-	mongo := mongodb.NewClient()
+	mongo := mongodb.NewClient(tracer)
 	capturesRepo := captures_mongo.NewRepository(mongo)
 
-	httpServer := http.NewServer(capturesRepo)
+	httpServer := http.NewServer(tracer, capturesRepo)
 	go httpServer.Start()
 
 	waitForShutdownSignal()
