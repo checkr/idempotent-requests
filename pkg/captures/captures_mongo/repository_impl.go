@@ -12,11 +12,6 @@ import (
 	"time"
 )
 
-const (
-	Database   = "idempotent_requests"
-	Collection = "captures"
-)
-
 type RepositoryImpl struct {
 	client     *mongodb.Client
 	collection *mongo.Collection
@@ -24,10 +19,11 @@ type RepositoryImpl struct {
 }
 
 func NewRepository(client *mongodb.Client) *RepositoryImpl {
+	cfg := mongodb.GetConfig()
 	wcMajority := writeconcern.New(writeconcern.WMajority(), writeconcern.WTimeout(30*time.Second))
 	wcMajorityCollectionOpts := options.Collection().SetWriteConcern(wcMajority)
-	collection := client.Mongo.Database(Database).
-		Collection(Collection, wcMajorityCollectionOpts)
+	collection := client.Mongo.Database(cfg.Database).
+		Collection(cfg.Collection, wcMajorityCollectionOpts)
 
 	createIndex(context.Background(), collection)
 
