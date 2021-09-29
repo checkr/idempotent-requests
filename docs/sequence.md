@@ -1,8 +1,4 @@
-# Idempotent Request Service v2
-
-Idempotent Request Service follows behaviors described in [IETF draft for standardized `Idempotency-Key` header](https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-idempotency-key-header-00).
-
-## Sequence
+## Request sequence
 
 ```mermaid
 sequenceDiagram
@@ -28,7 +24,7 @@ sequenceDiagram
     end
     
     alt Another request is in-flight
-        mongo -->> irs: status: capture-is-in-flight
+        mongo -->> irs: status: capture_is_in_flight
         irs -->> plugin_access: 409 Conflict
         plugin_access -->> kong: Set kong.response and exit
         kong -->> client: 409 Conflict
@@ -50,31 +46,4 @@ sequenceDiagram
     
     kong -->> -client: Response
     
-```
-
-## MongoDB: Insert, if not exists
-
-MongoDB supports `upsert` operations, i.e. it would create a new document, if lookup does not return results, or it would update existing one. 
-
-There are 2 ways to achieve the same result: 
-1. [`findOneAndUpdate` with `upsert` option](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/#update-document-with-upsert).
-2. [`findAndModify` with `upsert` option](https://docs.mongodb.com/manual/reference/method/db.collection.findAndModify/#upsert).
-
-Both operations must be executed with `upsert` and `$setOnInsert`.
-
-```shell
-db.people.findOneAndUpdate(
-    { id: "$(account-id)-$(idempotency-key)" },
-    { $setOnInsert: { status: "in-flight" }},
-    { upsert: true, returnNewDocument: false }
-);
-  
-# or
-
-db.people.findAndModify({
-    query: { id: "$(account-id)-$(idempotency-key)" },
-    update: { $setOnInsert: { status: "in-flight" }},
-    upsert: true,
-    new: false
-});
 ```
