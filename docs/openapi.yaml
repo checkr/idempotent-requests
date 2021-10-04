@@ -42,8 +42,8 @@ paths:
     post:
       tags:
         - Captures
-      summary: Capture a processed request and its response
-      description: Capture a processed request and its response
+      summary: Record a capture for a processed request and its response
+      description: Record a capture for a processed request and its response
       operationId: recordCapture
       requestBody:
         $ref: '#/components/requestBodies/RecordCaptureRequest'
@@ -58,7 +58,7 @@ paths:
 components:
   requestBodies:
     AllocateCaptureRequest:
-      description: Request object that needs to be added to the store
+      description: Information, which is required to allocate a capture
       required: true
       content:
         application/json:
@@ -66,7 +66,7 @@ components:
             $ref: "#/components/schemas/CaptureAllocation"
 
     RecordCaptureRequest:
-      description: Response obtained after processing a request
+      description: Response obtained after processing a request, capture of which we need to record.
       required: true
       content:
         application/json:
